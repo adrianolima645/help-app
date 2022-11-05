@@ -1,8 +1,9 @@
 FROM node:alpine
 WORKDIR /app
 COPY package.json .
-RUN npm install
-COPY . .
+RUN yarn install
+COPY . /app
+RUN yarn build
 ENV REACT_APP_NAME=myName
 EXPOSE 3000
-CMD ["npm", "start"]
+CMD ["yarn", "start"]

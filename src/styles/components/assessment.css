@@ -1,0 +1,17 @@
+.assessment {
+  width: 100%;
+  color: #5C8599;
+  margin-top: 25px;
+}
+
+.assessment label{
+  font-size: 18px;
+  font-weight: 800;
+  margin-right: 15px;
+}
+
+.assessment p {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 28px;
+}

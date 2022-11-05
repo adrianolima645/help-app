@@ -1,0 +1,208 @@
+#page-landing {
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(329.54deg, #29b6d1 0%, #00c7c7 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+}
+
+#page-landing .left-content-wraper {
+  position: relative;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(329.54deg, #29b6d1 0%, #00c7c7 100%);
+  display: flex;
+  align-items: flex-start;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+#page-landing .right-content-wraper {
+  position: relative;
+  width: 50%;
+  height: 100%;
+  background: #fff;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: row;
+  justify-content: flex-start;
+
+}
+
+#page-landing .left-content-wraper .wraper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  width: 90%;
+  max-width: 90%;
+  height: 100%;
+}
+
+/* position: relative;
+width: 100%;
+max-width: 1100px;
+height: 100%;
+max-height: 688px;
+display: flex;
+align-items: flex-start;
+flex-direction: column;
+justify-content: space-between;
+background: url('../../images/landing.svg') no-repeat 80% center; */
+
+#page-landing .left-content-wraper .wraper .text-landing {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-direction: column;
+  width: 70%;
+  max-width: 70%;
+  height: 70%;
+}
+
+#page-landing .right-content-wraper .form-landing {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  background: #FFFFFF;
+}
+
+#page-landing .left-content-wraper .wraper .text-landing .title {
+  font-family: 'Archivo Black';
+  font-size: 55px;
+  font-weight: 900;
+  line-height: 55px;
+}
+
+#page-landing .left-content-wraper .wraper .text-landing p {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 34px;
+  width: 70%;
+}
+
+
+form.login-form {
+  width: 700px;
+  margin: 64px auto;
+
+  background: #ffffff;
+
+  padding: 64px 80px;
+
+  overflow: hidden;
+}
+
+form.login-form  button.confirm-button {
+  margin-top: 20px;
+
+  width: 100%;
+  height: 64px;
+  border: 0;
+  cursor: pointer;
+  background: #3cdc8c;
+  border-radius: 20px;
+  color: #ffffff;
+  font-weight: 800;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  transition: background-color 0.2s;
+}
+
+form.login-form  button.confirm-button svg {
+  margin-right: 16px;
+}
+
+form.login-form  button.confirm-button:hover {
+  /* background: #36cf82; */
+  background: #32bc77;
+}
+
+form.login-form  button.google-button {
+  margin-top: 20px;
+
+  width: 100%;
+  height: 64px;
+  border: 0;
+  cursor: pointer;
+  background: linear-gradient(329.54deg, #15B6D6 0%, #15D6D6 100%);
+  border-radius: 20px;
+  color: #ffffff;
+  font-weight: 800;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  transition: background-color 0.2s;
+}
+
+form.login-form  button.google-button svg {
+  margin-right: 16px;
+}
+
+form.login-form  button.google-button:hover {
+  background: #2D9CDB;
+}
+
+form.login-form .register-links {
+  margin-top: 10px;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+form.login-form .register-links .link {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 33px;
+  text-decoration: none;
+  color: #8FA7B3;
+}
+
+.content-wraper .location {
+  position: absolute;
+  right: 0;
+  top: 0;
+  font-size: 24px;
+  line-height: 34px;
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+}
+
+.content-wraper .location strong {
+  font-weight: 800;
+}
+
+.content-wraper .enter-app {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 80px;
+  height: 80px;
+  background: #ffd666;
+  border-radius: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.content-wraper .enter-app:hover {
+  background: #96feff;
+}
