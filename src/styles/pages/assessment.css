@@ -20,15 +20,13 @@ export const Rating = styled.div`
 }
 
 form.assessment-form {
-  width: 700px;
+  width: 65%;
+  max-width: 700px;
   margin: 64px auto;
-
   background: #ffffff;
   border: 1px solid #d3e2e5;
   border-radius: 20px;
-
   padding: 64px 80px;
-
   overflow: hidden;
 }
 
@@ -77,4 +75,11 @@ form.assessment-form .description {
   font-size: 18px;
   line-height: 28px;
   color: #5C8599;
+}
+
+@media only screen and (max-width: 911px){
+  form.assessment-form {
+    width: 95%;
+    padding: 5%;
+  }
 }

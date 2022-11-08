@@ -4,7 +4,6 @@ import mapMarkerImg from '../images/map_marker.svg';
 
 const mapIcon = L.icon({
   iconUrl: mapMarkerImg,
-  shadowUrl: mapMarkerImg,
 
   iconSize: [58, 68],
   iconAnchor: [29, 68],

@@ -8,7 +8,7 @@ function Landing() {
       <div className="left-content-wraper">
           <div className='wraper'>
             <div className='text-landing'>
-              <img src={''} alt="Help!" />
+              <img src={logoImg} alt="Help!" />
               <h1 className='title'>Os principais pontos turísticos da cidade em um único lugar.</h1>
               <p>Conheça os principais pontos turísticos da cidade.</p>
             </div>

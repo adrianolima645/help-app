@@ -6,10 +6,9 @@
 }
 
 #page-map aside {
-  width: 440px;
+  max-width: 440px;
   background: linear-gradient(329.54deg, #29b6d1 0%, #00c7c7 100%);
   padding: 80px;
-
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -92,4 +91,10 @@
 
 #page-map .map-popup .leaflet-popup-tip-container {
   display: none;
+}
+
+@media only screen and (max-width: 911px){
+  #page-map aside  {
+    display: none;
+  }
 }
