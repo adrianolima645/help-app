@@ -11,13 +11,13 @@ interface InputTextProps {
     type: string;
     required:boolean;
     placeholder: string;
-    maxLenght?: number;
+    maxLength?: number;
     helpText ?: string;
   }
 
 export default function InputText(props: InputTextProps) {
 
-    const { id, label, helpText, name, value, onChange, type, required, placeholder, maxLenght} = props;
+    const { id, label, helpText, name, value, onChange, type, required, placeholder, maxLength} = props;
 
     let formatedLabel = label;
 
@@ -35,7 +35,7 @@ export default function InputText(props: InputTextProps) {
               onChange={onChange}
               type={type}
               placeholder={placeholder}
-              maxLength={maxLenght}
+              maxLength={maxLength}
           />
       </div>
     );

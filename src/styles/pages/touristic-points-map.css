@@ -36,6 +36,16 @@
   font-weight: 800;
 }
 
+#page-map aside footer button {
+  background: none;
+  border: none;
+  font-weight: 800;
+  color: #fff;
+  text-align: left;
+  padding-top: 2%;
+  font-size: 20px;
+}
+
 #page-map .create-touristic-point {
   position: absolute;
   right: 40px;

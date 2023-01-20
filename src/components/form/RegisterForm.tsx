@@ -1,8 +1,10 @@
-import React, { useState, FormEvent } from 'react';
+import { useState, FormEvent, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from '../inputs/Button';
 import Checkbox from '../inputs/Checkbox';
 import InputText from '../inputs/Input';
+import api from '../../services/api';
+import { AuthContext } from '../../contexts/AuthContext';
 
 export default function RegisterForm() {
     const [getName, setName] = useState('');
@@ -14,6 +16,7 @@ export default function RegisterForm() {
     const [getState, setState] = useState('');
     const [getPassword, setPassword] = useState('');
     const [getTerms, setTerms] = useState(false);
+    const {login} = useContext(AuthContext);
 
     const navigate = useNavigate();
 
@@ -34,68 +37,87 @@ export default function RegisterForm() {
 
     function validate() {
         const errors: Errors = {};
+        let check = false;
 
         if (getName.length <= 0) {
             errors.firstName = "O campo nome é obrigatório.";
+            check = true;
         }
 
         if (getLastName.length <= 0) {
             errors.lastName = "O campo nome é obrigatório.";
+            check = true;
         }
 
         if (!getEmail.includes('@')) {
             errors.email = "O e-mail informado é inválido.";
+            check = true;
         }
 
         if (getEmail.length <= 0) {
             errors.email = "O campo e-mail é obrigatório.";
+            check = true;
         }
 
         if (getDateOfBirth.length <= 0) {
             errors.dateOfBirth = "O campo data de nascimento é obrigatório.";
+            check = true;
         }
 
         if (getPhoneNumber.length <= 0) {
             errors.phoneNumber = "O campo telefone é obrigatório.";
+            check = true;
         }
 
         if (getCity.length <= 0) {
             errors.city = "O campo cidade é obrigatório.";
+            check = true;
         }
 
         if (getState.length <= 0) {
             errors.state = "O campo estado é obrigatório.";
+            check = true;
         }
 
         if (getPassword.length < 8) {
             errors.password = "O campo senha é obrigatório e deve ter entre 8 e 15 caracteres.";
+            check = true;
         }
 
         if (!getTerms) {
             errors.terms = "Aceite os termos de uso para se registrar.";
+            check = true;
         }
 
-        return errors;
+        setErrors(errors);
+        return check;
     }
 
 
     async function handleSubmit(event: FormEvent) {
         event.preventDefault();
-        // data.append('name', getName);
-        // data.append('about', getAbout);
-        // data.append('latitude', String(latitude));
-        // data.append('longitude', String(longitude));
-        // data.append('instructions', getInstructions);
-        // data.append('opening_hours', getOpeningHours);
-        // data.append('open_on_weekends', String(getOpeningOnWeekends));
+        if (!validate()) {
+            const data = {
+                'firstName': getName,
+                'lastName': getLastName,
+                'email': getEmail,
+                'dateOfBirth': getDateOfBirth,
+                'phone': getPhoneNumber,
+                'city': getCity,
+                'state': getState,
+                'password': getPassword,
+                'termsOfUse': getTerms.toString(),
+                'userType': "normal",
+                'userStatus': true
+            };
 
-        // getImages.forEach((image) => {
-        //   data.append('images', image);
-        // });
-        // await api.post('orphanages', data);
-        // alert('Cadastro realizado com sucesso!');
-        setErrors(validate());
-        navigate('/questionary');
+            const registerUrl = `user`;
+
+            const response = await api.post(registerUrl, data);
+            if (response.status === 200) {
+                login(response.data.schema.email, response.data.schema.password, '/questionary');
+            }
+        }
     }
 
     return (
@@ -112,8 +134,8 @@ export default function RegisterForm() {
                     label="Nome"
                     onChange={(event) => setName(event.target.value)}
                     required={true}
-                    placeholder="Digite o seu nome"
-                    maxLenght={60}
+                    placeholder=""
+                    maxLength={60}
                     />
                 {errors.firstName && <span className='fieldErrorMessage'>{errors.firstName}</span>}
 
@@ -125,8 +147,8 @@ export default function RegisterForm() {
                     label="Sobrenome"
                     onChange={(event) => setLastName(event.target.value)}
                     required={true}
-                    placeholder="Digite o seu sobrenome"
-                    maxLenght={80}
+                    placeholder=""
+                    maxLength={80}
                     />
                 {errors.lastName && <span className='fieldErrorMessage'>{errors.lastName}</span>}
 
@@ -138,8 +160,8 @@ export default function RegisterForm() {
                     label="E-mail"
                     onChange={(event) => setEmail(event.target.value)}
                     required={true}
-                    placeholder="Digite o seu melhor e-mail"
-                    maxLenght={80}
+                    placeholder=""
+                    maxLength={80}
                     />
                 {errors.email && <span className='fieldErrorMessage'>{errors.email}</span>}
 
@@ -151,8 +173,8 @@ export default function RegisterForm() {
                     label="Data de Nascimento"
                     onChange={(event) => setDateOfBirth(event.target.value)}
                     required={true}
-                    placeholder="Digite a sua data de nascimento"
-                    maxLenght={10}
+                    placeholder=""
+                    maxLength={10}
                     />
                 {errors.dateOfBirth && <span className='fieldErrorMessage'>{errors.dateOfBirth}</span>}
 
@@ -164,8 +186,8 @@ export default function RegisterForm() {
                     label="Telefone"
                     onChange={(event) => setPhoneNumber(event.target.value)}
                     required={true}
-                    placeholder="Digite o seu telefone"
-                    maxLenght={11}
+                    placeholder=""
+                    maxLength={11}
                     />
                 {errors.phoneNumber && <span className='fieldErrorMessage'>{errors.phoneNumber}</span>}
 
@@ -177,8 +199,8 @@ export default function RegisterForm() {
                     label="Cidate"
                     onChange={(event) => setCity(event.target.value)}
                     required={true}
-                    placeholder="Digite a sua cidade"
-                    maxLenght={60}
+                    placeholder=""
+                    maxLength={60}
                     />
                 {errors.city && <span className='fieldErrorMessage'>{errors.city}</span>}
 
@@ -190,8 +212,8 @@ export default function RegisterForm() {
                     label="Estado"
                     onChange={(event) => setState(event.target.value)}
                     required={true}
-                    placeholder="Digite o seu Estado"
-                    maxLenght={2}
+                    placeholder=""
+                    maxLength={2}
                     />
                 {errors.state && <span className='fieldErrorMessage'>{errors.state}</span>}
 
@@ -203,8 +225,8 @@ export default function RegisterForm() {
                     label="Senha"
                     onChange={(event) => setPassword(event.target.value)}
                     required={true}
-                    placeholder="Digite a sua senha"
-                    maxLenght={15}
+                    placeholder=""
+                    maxLength={15}
                     />
                 {errors.password && <span className='fieldErrorMessage'>{errors.password}</span>}
 

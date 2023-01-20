@@ -1,12 +1,39 @@
-import React, { useState, FormEvent } from 'react';
+import React, { useState, FormEvent, useEffect } from 'react';
 import { FaStar } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import api from '../../services/api';
 import Button from '../inputs/Button';
 import TextArea from '../inputs/TextArea';
 
+type AssessmentParams = {
+  id: string;
+}
+
+type User = {
+  id: string;
+  email: string;
+  userType: string;
+  fullName: string;
+}
+
 export default function AssessmentForm() {
+    const params = useParams<AssessmentParams>();
     const [getRate, setRate] = useState(0);
     const [getDescription, setDescription] = useState('');
+    const [getTouristicPointId, setTouristicPointId] = useState('');
+    const [user, setUser] = useState({} as User);
+
+    useEffect(() => {
+      const recoveredUser = localStorage.getItem('user');
+
+      if (recoveredUser) {
+        setUser(JSON.parse(recoveredUser));
+      }
+
+      if (params.id) {
+        setTouristicPointId(params.id);
+      }
+    }, []);
 
     const navigate = useNavigate();
 
@@ -16,41 +43,47 @@ export default function AssessmentForm() {
     type Errors = {
         rate ?: string;
         description ?: string;
+        validate?: boolean;
     }
 
     function validate() {
         const errors: Errors = {};
+        errors.validate = true;
 
         if (getRate<= 0) {
             errors.rate = "O campo rating é obrigatório.";
+            errors.validate = false;
         }
 
         if (getDescription.length <= 0) {
             errors.description = "O campo comentário é obrigatório.";
+            errors.validate = false;
         }
+        setErrors(errors);
 
-        return errors;
+        return errors.validate;
     }
 
 
     async function handleSubmit(event: FormEvent) {
         event.preventDefault();
-        // data.append('name', getName);
-        // data.append('about', getAbout);
-        // data.append('latitude', String(latitude));
-        // data.append('longitude', String(longitude));
-        // data.append('instructions', getInstructions);
-        // data.append('opening_hours', getOpeningHours);
-        // data.append('open_on_weekends', String(getOpeningOnWeekends));
+        if (validate()) {
+          const timeElapsed = Date.now();
+          const today = new Date(timeElapsed);
+          const data = {
+            'touristicPointId': getTouristicPointId,
+            'description': getDescription,
+            'rating': String(getRate),
+            'assessmentDate': today.toISOString(),
+            'author': user.fullName,
+            'userId': user.id,
+          };
 
-        // getImages.forEach((image) => {
-        //   data.append('images', image);
-        // });
-        // await api.post('orphanages', data);
-        // alert('Cadastro realizado com sucesso!');
+          const createAssessmentUrl = `assessment`;
+          const response = await api.post(createAssessmentUrl, data);
 
-        setErrors(validate());
-        navigate('/touristic-point');
+          navigate(`/touristic-point/${getTouristicPointId}`);
+        }
     }
 
     return (
@@ -99,7 +132,7 @@ export default function AssessmentForm() {
                 onChange={(event) => setDescription(event.target.value)}
                 required={true}
                 placeholder=""
-                maxLenght={300}
+                maxLength={300}
                 rows={8}
               />
               {errors.description && <span className='fieldErrorMessage'>{errors.description}</span>}

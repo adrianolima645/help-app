@@ -28,7 +28,7 @@
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   column-gap: 16px;
-
+  row-gap: 16px;
   margin: 16px 40px 0;
 }
 
@@ -196,7 +196,7 @@
   color: #ff6690;
 }
 
-.touristic-point-details .touristic-point-details-content button.contact-button {
+.touristic-point-details .touristic-point-details-content a.contact-button {
   margin-top: 64px;
 
   width: 100%;

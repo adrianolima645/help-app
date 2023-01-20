@@ -18,7 +18,7 @@ export default function Rating(props: RatingProps) {
           return (
             <FaStar key={index}
               color={
-                givenRating < rate || givenRating === rate
+                givenRating <= rate || givenRating === rate
                   ? color
                   : "C4C4C4"
               }

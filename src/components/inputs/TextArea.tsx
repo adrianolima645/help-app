@@ -11,13 +11,13 @@ interface TextAreaProps {
     onChange: React.ChangeEventHandler<HTMLTextAreaElement>;
     required:boolean;
     placeholder: string;
-    maxLenght?: number;
+    maxLength?: number;
     rows?: number
   }
 
 export default function TextArea(props: TextAreaProps) {
 
-    const { id, label, helpText, name, value, onChange, required, placeholder, maxLenght, rows} = props;
+    const { id, label, helpText, name, value, onChange, required, placeholder, maxLength, rows} = props;
     let formatedLabel = label;
 
     if (required) {
@@ -35,7 +35,7 @@ export default function TextArea(props: TextAreaProps) {
             value={value}
             onChange={onChange}
             placeholder={placeholder}
-            maxLength={maxLenght}
+            maxLength={maxLength}
             rows={rows}
         />
       </div>

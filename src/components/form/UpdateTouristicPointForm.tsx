@@ -1,7 +1,7 @@
 import { useState, FormEvent, ChangeEvent, useEffect } from 'react';
 import { FiPlus } from 'react-icons/fi';
 import { MapContainer, Marker, TileLayer, useMapEvents } from 'react-leaflet';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import api from '../../services/api';
 import mapIcon from '../../utils/mapIcon';
 import Button from '../inputs/Button';
@@ -20,7 +20,40 @@ type User = {
   userType: string;
 }
 
-export default function CreateTouristicPointForm() {
+interface TouristicPointInterface {
+  id: string;
+  categoryId: string;
+  geolocation: {
+    id: number,
+    latitude: number,
+    longitude: number,
+  };
+  name: string;
+  about: string;
+  instructions: string;
+  openingHours: string;
+  petFriendly: boolean;
+  openOnWeekends:boolean;
+  pictures: Array<{
+    _id:number;
+    location: string;
+    originalname:string;
+  }>;
+}
+
+type TouristicPointParams = {
+  id: string;
+}
+
+type Picture = {
+  originalname: string;
+  location: string;
+	key: string;
+}
+
+export default function UpdateTouristicPointForm() {
+  const params = useParams<TouristicPointParams>();
+  const [getTouristicPoint, setTouristicPoint] = useState<TouristicPointInterface>();
   const [user, setUser] = useState({} as User);
   const [getPosition, setPosition] = useState({ latitude: 0, longitude: 0});
   const [getCategories, setCategories] = useState<Category[]>([]);
@@ -41,6 +74,43 @@ export default function CreateTouristicPointForm() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    api.get(`touristicpoint/${params.id}`).then((response) => {
+      const { 
+        about,
+        name,
+        openingHours,
+        category_id,
+        openOnWeekends,
+        petFriendly,
+        geolocation,
+        pictures,
+        website,
+		    facebook,
+		    instagram,
+		    youtube,
+		    whatsappNumber,
+		    phoneNumber      
+      } = response.data.schema;
+      setAbout(about);
+      setName(name);
+      setOpeningHours(openingHours);
+      setSelectedCategory(category_id);
+      setOpeningOnWeekends(openOnWeekends === true);
+      setPetFriendly(petFriendly === true);
+      setPosition({latitude: geolocation.latitude, longitude: geolocation.longitude});
+      const images = pictures.map((picture: Picture) => {
+        return picture.location;
+      })
+      setPreviewImages(images);
+      setSite(website);
+      setFacebook(facebook);
+      setInstagram(instagram);
+      setPhoneNumber(phoneNumber);
+      setWhatsapp(whatsappNumber);
+      setYoutube(youtube);
+      setTouristicPoint(response.data.schema);
+    });
+
     api.get('category').then((response) => {
       setCategories(response.data.schema);
     });
@@ -51,7 +121,6 @@ export default function CreateTouristicPointForm() {
         setUser(JSON.parse(recoveredUser));
     }
   }, [])
-  
 
   function handleSelectImages(event: ChangeEvent<HTMLInputElement>) {
     if (!event.target.files) {
@@ -122,6 +191,7 @@ export default function CreateTouristicPointForm() {
     setErrors(errorList);
     if (validate()) {
       const data = new FormData();
+      data.append('_method', "PUT");
       data.append('name', String(getName));
       data.append('about', String(getAbout));
       data.append('category_id', String(getSelectedCategory));
@@ -144,9 +214,10 @@ export default function CreateTouristicPointForm() {
         data.append('images', getImages[index]);
       });
       
-      const createTouristicPointUrl = `touristicpoint`;
+      const createTouristicPointUrl = `touristicpoint/${params.id}`;
       const response = await api.post(createTouristicPointUrl, data);
-      navigate('/app');
+      console.log(response);
+      navigate(`/touristic-point/${params.id}`);
     }
   }
 
@@ -203,7 +274,7 @@ export default function CreateTouristicPointForm() {
           <MapContainer
             center={[-22.588334, -46.524675]}
             style={{ width: '100%', height: 280 }}
-            zoom={17}
+            zoom={14}
           >
             <Markers />
             <TileLayer
@@ -255,7 +326,7 @@ export default function CreateTouristicPointForm() {
 
             <div className="images-container">
               {getPreviewImages.map((image) => {
-                return <img key={image} src={image} alt={getName} />;
+                return <img key={image} src={image} alt={image} />;
               })}
               <label htmlFor="image[]" className="new-image">
                 <FiPlus size={24} color="#15b6d6" />

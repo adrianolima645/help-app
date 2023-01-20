@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode, useEffect, useState } from 'react';
+import { createContext, ReactNode, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 
@@ -7,7 +7,7 @@ type UserContext = {
   user: User;
   authenticated: boolean;
   loading: boolean;
-  login: (email: string, password: string) => void | boolean;
+  login: (email: string, password: string, toRedirect: string) => void | boolean;
   logout: () => void;
 }
 
@@ -15,6 +15,7 @@ type User = {
   id: string;
   email: string;
   userType: string;
+  fullName: string;
 }
 
 export const AuthContext = createContext({} as UserContext);
@@ -42,34 +43,37 @@ export const AuthProvider = ({children} : Props) => {
 
   const navigate = useNavigate();
 
-  const login = (email: string, password: string) => {
+  const login = (email: string, password: string, toRedirect: string) => {
     setLoading(true);
 
     const loginUrl = `user/login/${email}/${password}`;
 
     api.get(loginUrl).then((response) => {
       if (response.status === 200) {
-        const {id, email, userType} = response.data.schema;
+        const {id, email, userType, firstName, lastName} = response.data.schema;
         const loggedUser = {
           id,
           email,
-          userType
+          userType,
+          fullName: `${firstName} ${lastName}`
+
         };
 
         setUser(loggedUser);
         localStorage.setItem('user', JSON.stringify(loggedUser));
         setLoading(false);
         setAuthenticated(true);
-        navigate('/app');
+        navigate(toRedirect);
       }
     });
+    return authenticated;
   }
 
   const logout = () => {
     localStorage.removeItem('user');
     setUser({} as User);
     setAuthenticated(false);
-    navigate('/login');
+    navigate('/');
   }
 
   return (

@@ -1,15 +1,15 @@
 import Sidebar from '../components/Sidebar';
 import '../styles/pages/create-touristic-point.css';
-import CreateTouristicPointForm from '../components/form/CreateTouristicPointForm';
+import UpdateTouristicPointForm from '../components/form/UpdateTouristicPointForm';
 
-export default function CreateTouristicPoint() {
+export default function UpdateTouristicPoint() {
 
   return (
     <div id="page-create-touristic-point">
       <Sidebar />
 
       <main>
-        <CreateTouristicPointForm />
+        <UpdateTouristicPointForm />
       </main>
     </div>
   );

@@ -1,44 +1,43 @@
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FiPlus, FiArrowRight } from 'react-icons/fi';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-
-import mapMarkerImg from '../images/map_marker.svg';
 import '../styles/pages/touristic-points-map.css';
-
 import mapIcon from '../utils/mapIcon';
 import { AuthContext } from '../contexts/AuthContext';
-// import api from '../services/api';
+import api from '../services/api';
 
 interface TouristicPoint {
   id: string;
-  latitude: number;
-  longitude: number;
+  geolocation: {
+    latitude: number;
+    longitude: number;
+  }
   name: string;
 }
 
 function TouristicPointsMap() {
-  let listTouristicPointsMock: TouristicPoint[] = [
-    {
-      id: "0124545",
-      latitude: -22.588334,
-      longitude: -46.524675,
-      name: "Praça da Matriz",
-    }
-  ];
   const [getTouristicPoints, setTouristicPoints] = useState<TouristicPoint[]>([]);
   const {logout} = useContext(AuthContext);
 
-  // useEffect(() => {
-  //   api.get('orphanages').then((response) => {
-  //     setOrphanages(response.data);
-  //   });
-  // }, []);
-
   useEffect(() => {
-      setTouristicPoints(listTouristicPointsMock);
-    }, []);
+    api.get('touristicPoint/findByStatus/true').then((response) => {
+      const result = response.data.schema;
 
+      const touristicPoints = result.map((item: TouristicPoint) => {
+        return {
+          id: item.id,
+          name: item.name,
+          geolocation: {
+            latitude: item.geolocation.latitude,
+            longitude: item.geolocation.longitude,
+          }
+        };
+      });
+
+      setTouristicPoints(touristicPoints);
+    });
+  }, []);
   
   return (
     <div id="page-map">
@@ -51,7 +50,7 @@ function TouristicPointsMap() {
         <footer>
           <strong>Socorro</strong>
           <span>São Paulo</span>
-          <button onClick={logout}>Logout</button>
+          <button className="logout-button" onClick={logout}>Logout</button>
         </footer>
       </aside>
 
@@ -64,12 +63,12 @@ function TouristicPointsMap() {
           url={`https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiYWRyaWFub2xpbWE2NDUiLCJhIjoiY2tnOHAyOWFmMDA5eDJxcDVuM3FwbDBlbCJ9.vJxoMiSdFI5-fZrXZspTrQ`}
         />
 
-        {getTouristicPoints.map((touristicPoint) => {
+        {getTouristicPoints.map((touristicPoint: TouristicPoint) => {
           return (
             <Marker
               key={touristicPoint.id}
               icon={mapIcon}
-              position={[touristicPoint.latitude, touristicPoint.longitude]}
+              position={[touristicPoint.geolocation.latitude,touristicPoint.geolocation.longitude]}
             >
               <Popup
                 className="map-popup"
@@ -86,7 +85,7 @@ function TouristicPointsMap() {
           );
         })}
       </MapContainer>
-      <Link to="/touristic-points/create" className="create-touristic-point">
+      <Link to="/touristic-point/create" className="create-touristic-point">
         <FiPlus size={32} color="#fff" />
       </Link>
     </div>

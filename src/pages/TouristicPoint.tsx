@@ -1,28 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FaChrome, FaFacebook, FaInstagram, FaWhatsapp, FaYoutube } from 'react-icons/fa';
 import { FiClock, FiInfo } from 'react-icons/fi';
 import { MapContainer, Marker, TileLayer } from 'react-leaflet';
-import L from 'leaflet';
 import { Link, useParams } from 'react-router-dom';
-
-import mapMarkerImg from '../images/map_marker.svg';
-
 import '../styles/pages/touristic-point.css';
 import Sidebar from '../components/Sidebar';
 import mapIcon from '../utils/mapIcon';
 import api from '../services/api';
 import AssessmentList from '../components/AssessmentList';
-
-const happyMapIcon = L.icon({
-  iconUrl: mapMarkerImg,
-
-  iconSize: [58, 68],
-  iconAnchor: [29, 68],
-  popupAnchor: [0, -60],
-});
+import SponsoredSection from '../components/section/SponsoredSection';
 
 interface TouristicPointInterface {
-  geolocalization: {
+  id: string;
+  geolocation: {
     id: number,
     latitude: number,
     longitude: number,
@@ -30,14 +20,20 @@ interface TouristicPointInterface {
   name: string;
   about: string;
   instructions: string;
-  opening_hours: string;
-  pet_friendly: boolean;
+  openingHours: string;
+  petFriendly: boolean;
   pictures: Array<{
-    id:number;
-    url: string;
+    _id:number;
+    location: string;
+    originalname:string;
   }>;
+  sponsored: boolean;
+  website: string;
+  facebook: string;
+  instagram: string;
+  youtube: string;
+  whatsappNumber: string;
 }
-
 
 type TouristicPointParams = {
   id: string;
@@ -48,68 +44,23 @@ type AssessmentType = {
   author: string;
   description: string;
   rating: number;
+  userId: string;
 }
 
 export default function TouristicPoint() {
   const params = useParams<TouristicPointParams>();
-  let obj :TouristicPointInterface = {
-    geolocalization: {
-      id: 0,
-      latitude: -22.588334,
-      longitude:  -46.524675 ,
-    },
-    name: "Praça da Matriz",
-    about: "Praça da Matriz",
-    instructions: "Praça da Matriz",
-    opening_hours: "Praça da Matriz",
-    pet_friendly: true,
-    pictures: [
-      {
-        id: 1,
-        url: "https://picsum.photos/id/237/200/300",
-      },
-      {
-        id: 2,
-        url: "https://picsum.photos/id/238/200/300",
-      },
-      {
-        id: 3,
-        url: "https://picsum.photos/id/239/200/300",
-      },
-      {
-        id: 4,
-        url: "https://picsum.photos/id/240/200/300",
-      },
-    ]
-  };
 
-  let assessmentList:AssessmentType[]  = [
-    {
-      id: 'string',
-      author: 'Adriano Lima',
-      description: 'O parque da cidade possui atrações para todos as idades, perfeito para prática de esportes poir conta com quadras de areia e poliesportivas...',
-      rating: 5
-    },
-    {
-      id: 'string',
-      author: 'Lucio José',
-      description: 'O parque da cidade possui atrações para todos as idades, perfeito para prática de esportes poir conta com quadras de areia e poliesportivas...',
-      rating: 2
-    },
-    {
-      id: 'string',
-      author: 'Bruna Formigoni',
-      description: 'O parque da cidade possui atrações para todos as idades, perfeito para prática de esportes poir conta com quadras de areia e poliesportivas...',
-      rating: 4
-    },
-  ];
+  const [getTouristicPoint, setTouristicPoint] = useState<TouristicPointInterface>();
+  const [getActiveImageIndex, setActiveImageIndex] = useState(0)
+  const [getAssessmentList, setAssessmentList] = useState<AssessmentType[]>([]); 
 
-  const [getTouristicPoint, setTouristicPoint] = useState<TouristicPointInterface>(obj);
-  const [getActiveImageIndex, setActiveImageIndex] = useState(0);
-  const [getAssessmentList, setAssessmentList] = useState(assessmentList);
   useEffect(() => {
-    api.get(`touristicPoint/${params.id}`).then((response) => {
+    api.get(`touristicpoint/${params.id}`).then((response) => {
       setTouristicPoint(response.data.schema);
+    });
+
+    api.get(`assessment/findByTouristicPoint/${params.id}`).then((response) => {
+      setAssessmentList(response.data.schema);
     });
   }, []);
 
@@ -122,13 +73,13 @@ export default function TouristicPoint() {
       <Sidebar />
       <main>
         <div className="touristic-point-details">
-          <img src={getTouristicPoint.pictures[getActiveImageIndex].url} alt={getTouristicPoint.name} />
+          <img src={getTouristicPoint.pictures[getActiveImageIndex].location} alt={getTouristicPoint.pictures[getActiveImageIndex].originalname} />
 
           <div className="images">
             { getTouristicPoint.pictures.map((image,index) => {
                 return (
                   <button 
-                    key={image.id} 
+                    key={image._id} 
                     className={getActiveImageIndex===index ? 'active' : ''} 
                     type="button" 
                     onClick={()=>{
@@ -136,8 +87,8 @@ export default function TouristicPoint() {
                     }}
                   >
                     <img
-                      src={image.url}
-                      alt="Lar das meninas"
+                      src={image.location}
+                      alt={image.originalname}
                     />
                   </button>
                 );
@@ -150,7 +101,7 @@ export default function TouristicPoint() {
 
             <div className="map-container">
               <MapContainer
-                center={[getTouristicPoint.geolocalization.latitude, getTouristicPoint.geolocalization.longitude]}
+                center={[getTouristicPoint.geolocation.latitude, getTouristicPoint.geolocation.longitude]}
                 zoom={16}
                 style={{ width: '100%', height: 280 }}
                 dragging={false}
@@ -165,22 +116,22 @@ export default function TouristicPoint() {
                 <Marker
                   interactive={false}
                   icon={mapIcon}
-                  position={[getTouristicPoint.geolocalization.latitude, getTouristicPoint.geolocalization.longitude]}
+                  position={[getTouristicPoint.geolocation.latitude, getTouristicPoint.geolocation.longitude]}
                 />
               </MapContainer>
 
               <footer>
-                <a target="_blank" rel="noreferrer" href={`https://www.google.com/maps/dir/?api=1&destination=${getTouristicPoint.geolocalization.latitude},${getTouristicPoint.geolocalization.longitude}`}>Ver rotas no Google Maps</a>
+                <a target="_blank" rel="noreferrer" href={`https://www.google.com/maps/dir/?api=1&destination=${getTouristicPoint.geolocation.latitude},${getTouristicPoint.geolocation.longitude}`}>Ver rotas no Google Maps</a>
               </footer>
             </div>
 
             <div className="open-details">
               <div className="hour">
                 <FiClock size={32} color="#15B6D6" />
-                {getTouristicPoint.opening_hours}
+                {getTouristicPoint.openingHours}
               </div>
               {
-                getTouristicPoint.pet_friendly ?(
+                getTouristicPoint.petFriendly ?(
                   <div className="pet-friendly">
                     <FiInfo size={32} color="#39CC83" />
                     Pet Friendly
@@ -192,35 +143,20 @@ export default function TouristicPoint() {
               </div>}
             </div>
 
-            <hr />
-
-            <h2>Informações adicionais</h2>
-
-            <div className="info-details">
-              <div className="hour">
-                <FaFacebook size={64} color="#15B6D6" />
-              </div>
-              <div className="hour">
-                <FaInstagram size={64} color="#15B6D6" />
-              </div>
-              <div className="hour">
-                <FaYoutube size={64} color="#15B6D6" />
-              </div>
-              <div className="hour">
-                <FaChrome size={64} color="#15B6D6" />
-              </div>
-              
-            </div>
-
-            <button type="button" className="contact-button">
-              <FaWhatsapp size={20} color="#FFF" />
-              Entrar em contato
-            </button>
+            { getTouristicPoint.sponsored && 
+              <SponsoredSection 
+                website={getTouristicPoint.website}
+                facebook={getTouristicPoint.facebook}
+                instagram={getTouristicPoint.instagram}
+                youtube={getTouristicPoint.youtube}
+                whatsappNumber={getTouristicPoint.whatsappNumber}
+                /> 
+            }
 
             <hr />
             <div className='assessment-section'>
               <h2>Avaliações</h2>
-              <Link className='link' to="/assessment/create" >+ Avaliar Local</Link>
+              <Link className='link' to={`/assessment/create/${getTouristicPoint.id}`} >+ Avaliar Local</Link>
             </div>
             
 
