@@ -114,18 +114,17 @@ form.login-form  button.confirm-button:hover {
   background: #32bc77;
 }
 
-form.login-form  button.google-button {
-  margin-top: 20px;
+form.login-form .google-button {
+  margin-top: 1%;
 
   width: 100%;
   height: 64px;
   border: 0;
   cursor: pointer;
-  background: linear-gradient(329.54deg, #15B6D6 0%, #15D6D6 100%);
   border-radius: 20px;
   color: #ffffff;
   font-weight: 800;
-
+  background: linear-gradient(329.54deg, #15B6D6 0%, #15D6D6 100%);
   display: flex;
   justify-content: center;
   align-items: center;

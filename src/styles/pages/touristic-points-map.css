@@ -14,6 +14,10 @@
   justify-content: space-between;
 }
 
+#page-map aside h1 {
+  margin-top: 64px;
+}
+
 #page-map aside h2 {
   font-size: 40px;
   font-weight: 800;

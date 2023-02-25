@@ -216,7 +216,7 @@ export default function UpdateTouristicPointForm() {
       
       const createTouristicPointUrl = `touristicpoint/${params.id}`;
       const response = await api.post(createTouristicPointUrl, data);
-      console.log(response);
+
       navigate(`/touristic-point/${params.id}`);
     }
   }

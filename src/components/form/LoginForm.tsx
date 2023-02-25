@@ -1,15 +1,18 @@
-import { useState, FormEvent, useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, FormEvent, useContext, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import Button from '../inputs/Button';
 import InputText from '../inputs/Input';
 import { AuthContext } from '../../contexts/AuthContext';
+import { GoogleLogin, GoogleLoginResponse, GoogleLoginResponseOffline } from 'react-google-login';
+import { gapi } from 'gapi-script';
+import api from '../../services/api';
+
 
 export default function LoginForm() {
     const [getEmail, setEmail] = useState('');
     const [getPassword, setPassword] = useState('');
 
     const {login} = useContext(AuthContext);
-    const navigate = useNavigate();
 
     type Errors = {
       email ?: string;
@@ -17,7 +20,22 @@ export default function LoginForm() {
       login ?: string;
     }
 
+    const clientId = "671572362786-g7s2p7tupvguvlu0od7314rojfl7sj4l.apps.googleusercontent.com";
+
+    useEffect(() => {
+      const initClient = () => {
+            gapi.client.init({
+            clientId: clientId,
+            scope: ''
+          });
+       };
+       gapi.load('client:auth2', initClient);
+    });
+
     const [errors, setErrors] = useState({} as Errors);
+    const [givenName, setGivenName] = useState('');
+    const [familyName, setFamilyName] = useState('');
+
 
     function validate(loginError: boolean = false) {
           const errors: Errors = {};
@@ -57,12 +75,55 @@ export default function LoginForm() {
         event.preventDefault();
         const check = validate(false);
         if (!check) {
-          const result = login(getEmail, getPassword, '/app');
+          const result = await login(getEmail, getPassword, '/app');
           if (!result) {
             validate(true);
           }
         }
     }
+
+    async function handleSubmitGoogleLogin(email: string, password: string) {
+      const result = await login(email, password, '/app');
+
+      if (!result) {
+        const data = {
+          'firstName': givenName,
+          'lastName': familyName,
+          'email': getEmail,
+          'dateOfBirth': "2000/12/07",
+          'phone': "11111111111",
+          'city': "Socorro",
+          'state': "SP",
+          'password': getPassword,
+          'termsOfUse': true,
+          'userType': "normal",
+          'userStatus': true
+        };
+
+        const registerUrl = `user`;
+
+        const response = await api.post(registerUrl, data);
+
+        if (response.status === 200) {
+            login(response.data.schema.email, response.data.schema.password, '/questionary');
+        }
+      }
+    }
+
+    const onSuccess = (res: GoogleLoginResponse | GoogleLoginResponseOffline) => {
+      if ("profileObj" in res && res.profileObj !== undefined) { 
+        const response = res.profileObj; 
+        setGivenName(response.givenName);
+        setFamilyName(response.familyName);
+        setEmail(response.email);
+        setPassword(response.googleId);
+        handleSubmitGoogleLogin(response.email, response.googleId);
+      }
+    }
+
+    const onFailure = (res: GoogleLoginResponse) => {
+    }
+
 
     return (
       <div>    
@@ -102,13 +163,23 @@ export default function LoginForm() {
               label="Confirmar"
             />
 
-            <Button
-              id="submitGoogleButton"
-              name="submitGoogleButton"
-              type="button"
-              styleButton="google-button"
-              label="Logar com Google"
+            <GoogleLogin
+              clientId={clientId}
+              buttonText="Logar com Google"
+              onSuccess={onSuccess}
+              onFailure={onFailure}
+              cookiePolicy={'single_host_origin'}
+              isSignedIn={true}
+              render={renderProps => (
+                <button className='google-button'
+                  id="submitGoogleButton"
+                  name="submitGoogleButton"
+                  type="button"
+                  onClick={renderProps.onClick}
+                >Logar com Google</button>
+              )}
             />
+            
             
             <div className="register-links">
               <Link className='link' to="/register" >Cadastre-se</Link>

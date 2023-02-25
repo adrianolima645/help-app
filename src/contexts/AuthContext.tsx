@@ -1,4 +1,5 @@
 import { createContext, ReactNode, useEffect, useState } from 'react';
+import { useGoogleLogout } from 'react-google-login'
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 
@@ -7,7 +8,7 @@ type UserContext = {
   user: User;
   authenticated: boolean;
   loading: boolean;
-  login: (email: string, password: string, toRedirect: string) => void | boolean;
+  login: (email: string, password: string, toRedirect: string) => Promise<boolean>;
   logout: () => void;
 }
 
@@ -43,20 +44,23 @@ export const AuthProvider = ({children} : Props) => {
 
   const navigate = useNavigate();
 
-  const login = (email: string, password: string, toRedirect: string) => {
+  async function login(email: string, password: string, toRedirect: string) {
     setLoading(true);
 
     const loginUrl = `user/login/${email}/${password}`;
 
-    api.get(loginUrl).then((response) => {
+    let isAuthenticated = false;
+
+    await api.get(loginUrl).then((response) => {
       if (response.status === 200) {
         const {id, email, userType, firstName, lastName} = response.data.schema;
+        const token = response.data.token;
         const loggedUser = {
           id,
           email,
           userType,
-          fullName: `${firstName} ${lastName}`
-
+          fullName: `${firstName} ${lastName}`,
+          token
         };
 
         setUser(loggedUser);
@@ -64,12 +68,13 @@ export const AuthProvider = ({children} : Props) => {
         setLoading(false);
         setAuthenticated(true);
         navigate(toRedirect);
+        isAuthenticated = true;
       }
     });
-    return authenticated;
+    return isAuthenticated;
   }
 
-  const logout = () => {
+  async function logout() {
     localStorage.removeItem('user');
     setUser({} as User);
     setAuthenticated(false);

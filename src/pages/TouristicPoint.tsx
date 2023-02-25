@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { FaChrome, FaFacebook, FaInstagram, FaWhatsapp, FaYoutube } from 'react-icons/fa';
 import { FiClock, FiInfo } from 'react-icons/fi';
 import { MapContainer, Marker, TileLayer } from 'react-leaflet';
 import { Link, useParams } from 'react-router-dom';
@@ -9,6 +8,7 @@ import mapIcon from '../utils/mapIcon';
 import api from '../services/api';
 import AssessmentList from '../components/AssessmentList';
 import SponsoredSection from '../components/section/SponsoredSection';
+import AdminSection from '../components/section/AdminSection';
 
 interface TouristicPointInterface {
   id: string;
@@ -33,6 +33,7 @@ interface TouristicPointInterface {
   instagram: string;
   youtube: string;
   whatsappNumber: string;
+  user_id: string;
 }
 
 type TouristicPointParams = {
@@ -47,12 +48,20 @@ type AssessmentType = {
   userId: string;
 }
 
+type User = {
+  id: string;
+  email: string;
+  userType: string;
+  fullName: string;
+}
+
 export default function TouristicPoint() {
   const params = useParams<TouristicPointParams>();
 
   const [getTouristicPoint, setTouristicPoint] = useState<TouristicPointInterface>();
   const [getActiveImageIndex, setActiveImageIndex] = useState(0)
-  const [getAssessmentList, setAssessmentList] = useState<AssessmentType[]>([]); 
+  const [getAssessmentList, setAssessmentList] = useState<AssessmentType[]>([]);
+  const [user, setUser] = useState({} as User);
 
   useEffect(() => {
     api.get(`touristicpoint/${params.id}`).then((response) => {
@@ -62,10 +71,24 @@ export default function TouristicPoint() {
     api.get(`assessment/findByTouristicPoint/${params.id}`).then((response) => {
       setAssessmentList(response.data.schema);
     });
+
+    const recoveredUser = localStorage.getItem('user');
+
+    if (recoveredUser) {
+      setUser(JSON.parse(recoveredUser));
+    }
   }, []);
 
   if (!getTouristicPoint) {
     return <p>Carregando...</p>;
+  }
+
+  function isAdmin() {
+    if (user.id === getTouristicPoint?.user_id) {
+      return true;
+    }
+
+    return false;
   }
 
   return (
@@ -96,7 +119,12 @@ export default function TouristicPoint() {
           </div>
 
           <div className="touristic-point-details-content">
+
+            {isAdmin() && <AdminSection id={getTouristicPoint.id}/> }
+         
             <h1>{getTouristicPoint.name}</h1>
+              
+            
             <p>{getTouristicPoint.about}</p>
 
             <div className="map-container">

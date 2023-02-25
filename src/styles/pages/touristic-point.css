@@ -223,6 +223,27 @@
   background: #36cf82;
 }
 
+.admin-section {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.admin-section .admin-info {
+  align-items: center;
+  vertical-align: middle;
+  color: #3cdc8c;
+}
+
+
+.admin-section .link-edit {
+  background-color: #15B6D6;
+  color: #fff;
+  padding: 2%;
+  border-radius: 20px;
+}
+
 
 .assessment-section {
   display: flex;
@@ -239,7 +260,47 @@
 }
 
 @media only screen and (max-width: 911px){
+  .touristic-point-details 
+  .touristic-point-details-content {
+    padding: 30px;
+  }
+
   .touristic-point-details {
     width: 95%;
+  }
+}
+
+@media only screen and (max-width: 720px){
+  .touristic-point-details .touristic-point-details-content .info-details {
+    margin-top: 24px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 15px;
+    row-gap: 15px;
+    place-items: center;
+  }
+}
+
+@media only screen and (max-width: 480px){
+  .assessment-section {
+    display: block;
+  }
+
+  .touristic-point-details .images {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    column-gap: 16px;
+    row-gap: 16px;
+    margin: 16px 40px 0;
+  }
+
+  .touristic-point-details .touristic-point-details-content h1 {
+    font-size: 30px;
+    line-height: 30px;
+  }
+
+  .touristic-point-details .touristic-point-details-content h2 {
+    font-size: 30px;
+    line-height: 30px;
   }
 }

@@ -6,6 +6,8 @@ import '../styles/pages/touristic-points-map.css';
 import mapIcon from '../utils/mapIcon';
 import { AuthContext } from '../contexts/AuthContext';
 import api from '../services/api';
+import { GoogleLogout } from 'react-google-login';
+import logoImg from '../images/logo.svg';
 
 interface TouristicPoint {
   id: string;
@@ -16,9 +18,19 @@ interface TouristicPoint {
   name: string;
 }
 
+type User = {
+  id: string;
+  email: string;
+  userType: string;
+  fullName: string;
+}
+
+
 function TouristicPointsMap() {
   const [getTouristicPoints, setTouristicPoints] = useState<TouristicPoint[]>([]);
+  const [user, setUser] = useState({} as User);
   const {logout} = useContext(AuthContext);
+  const clientId = "671572362786-g7s2p7tupvguvlu0od7314rojfl7sj4l.apps.googleusercontent.com";
 
   useEffect(() => {
     api.get('touristicPoint/findByStatus/true').then((response) => {
@@ -37,20 +49,37 @@ function TouristicPointsMap() {
 
       setTouristicPoints(touristicPoints);
     });
+
+    const recoveredUser = localStorage.getItem('user');
+    
+    if (recoveredUser) {
+        setUser(JSON.parse(recoveredUser));
+    }
   }, []);
   
   return (
     <div id="page-map">
       <aside>
         <header>
-          <img src={''} alt="Help!" />
+          <img src={logoImg} alt="Help!" />
+          <h1>Olá {user.fullName}</h1>
           <h2>Escolha um ponto turístico no mapa</h2>
           <p>Aqui você vai encontrar os melhores pontos comerciais e turísticos da cidade!</p>
         </header>
         <footer>
           <strong>Socorro</strong>
           <span>São Paulo</span>
-          <button className="logout-button" onClick={logout}>Logout</button>
+          <GoogleLogout
+            clientId={clientId}
+            buttonText="Logout"
+            onLogoutSuccess={logout}
+            render={renderProps => (
+              <button className='logout-button'
+                type="button"
+                onClick={renderProps.onClick}
+              >Logout</button>
+            )}
+          />
         </footer>
       </aside>
 
@@ -85,9 +114,11 @@ function TouristicPointsMap() {
           );
         })}
       </MapContainer>
-      <Link to="/touristic-point/create" className="create-touristic-point">
-        <FiPlus size={32} color="#fff" />
-      </Link>
+      {user.userType === "admin" && 
+        <Link to="/touristic-point/create" className="create-touristic-point">
+          <FiPlus size={32} color="#fff" />
+        </Link>
+      }   
     </div>
   );
 }
