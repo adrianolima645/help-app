@@ -115,7 +115,7 @@ export default function RegisterForm() {
 
             const response = await api.post(registerUrl, data);
             if (response.status === 200) {
-                login(response.data.schema.email, response.data.schema.password, '/questionary');
+                login(getEmail, getPassword, '/questionary');
             }
         }
     }
