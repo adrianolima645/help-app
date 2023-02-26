@@ -25,7 +25,7 @@ export default function QuestionaryForm() {
 
     useEffect(() => {
         api.get('question/findByStatus?questionStatus=true').then((response) => {
-            setQuestions(response.data);
+            setQuestions(response.data.schema);
         });
         const recoveredUser = localStorage.getItem('user');
     

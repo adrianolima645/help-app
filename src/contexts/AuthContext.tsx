@@ -1,3 +1,4 @@
+import { AxiosRequestConfig } from 'axios';
 import { createContext, ReactNode, useEffect, useState } from 'react';
 import { useGoogleLogout } from 'react-google-login'
 import { useNavigate } from 'react-router-dom';
@@ -51,7 +52,14 @@ export const AuthProvider = ({children} : Props) => {
 
     let isAuthenticated = false;
 
-    await api.get(loginUrl).then((response) => {
+    let conf: AxiosRequestConfig = {};
+
+    conf.validateStatus = (status: number) => {
+        
+        return (status >= 200 && status < 300) || status === 404
+    }
+
+    await api.get(loginUrl, conf).then((response) => {
       if (response.status === 200) {
         const {id, email, userType, firstName, lastName} = response.data.schema;
         const token = response.data.token;
@@ -71,6 +79,7 @@ export const AuthProvider = ({children} : Props) => {
         isAuthenticated = true;
       }
     });
+
     return isAuthenticated;
   }
 
